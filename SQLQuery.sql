@@ -30,3 +30,19 @@ order by customer_id
 | B            | 74           |
 | C            | 36           |
 +──────────────+──────────────+
+
+-------------------------------------------------------------------------
+-- 2. How many days has each customer visited the restaurant?
+
+Select customer_id, COUNT(distinct order_date) as visited_Days
+from sales
+group by customer_id
+
+-- results
++──────────────+───────────────+
+| customer_id  | visited_days  |
++──────────────+───────────────+
+| A            | 4             |
+| B            | 6             |
+| C            | 2             |
++──────────────+───────────────+
