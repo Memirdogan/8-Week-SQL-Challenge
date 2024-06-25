@@ -46,3 +46,28 @@ group by customer_id
 | B            | 6             |
 | C            | 2             |
 +──────────────+───────────────+
+
+-------------------------------------------------------------------------
+-- 3. What was the first item from the menu purchased by each customer?
+
+with order_cte as (
+	Select sales.customer_id, menu.product_name,
+	ROW_NUMBER() over (
+		partition by sales.customer_id
+		order by sales.order_date, sales.product_id
+		) as item_order
+	from sales join menu on
+	sales.product_id = menu.product_id
+	)
+select *
+from order_cte
+where item_order = 1
+
+-- results
++──────────────+───────────────+─────────────+
+| customer_id  | product_name  | item_order  |
++──────────────+───────────────+─────────────+
+| A            | sushi         | 1           |
+| B            | curry         | 1           |
+| C            | ramen         | 1           |
++──────────────+───────────────+─────────────+
