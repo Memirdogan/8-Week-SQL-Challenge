@@ -71,3 +71,19 @@ where item_order = 1
 | B            | curry         | 1           |
 | C            | ramen         | 1           |
 +──────────────+───────────────+─────────────+
+
+-------------------------------------------------------------------------
+-- 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+
+select TOP 1 menu.product_name, count(sales.order_date) as freq
+from menu 
+join sales on menu.product_id = sales.product_id
+group by product_name
+order by freq desc
+
+--results
++───────────────+──────────────+
+| product_name  | order_count  |
++───────────────+──────────────+
+| ramen         | 8            |
++───────────────+──────────────+
