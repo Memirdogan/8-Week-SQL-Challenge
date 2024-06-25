@@ -87,3 +87,33 @@ order by freq desc
 +───────────────+──────────────+
 | ramen         | 8            |
 +───────────────+──────────────+
+
+-------------------------------------------------------------------------
+-- 5. Which item was the most popular for each customer?
+
+with cte_order_count as (
+	Select sales.customer_id, menu.product_name, COUNT(*) as order_count
+	from sales 
+	inner join menu on 
+	menu.product_id = sales.product_id
+	group by customer_id, menu.product_name
+	),
+cte_populer_Rank as (
+	select *,
+	RANK() over(partition by customer_id order by order_count desc) as rank
+	from cte_order_count
+	)
+select * from cte_populer_Rank
+where rank = 1
+
+--results
++──────────────+───────────────+──────────────+───────+
+| customer_id  | product_name  | order_count  | rank  |
++──────────────+───────────────+──────────────+───────+
+| A            | ramen         | 3            | 1     |
+| B            | ramen         | 2            | 1     |
+| B            | curry         | 2            | 1     |
+| B            | sushi         | 2            | 1     |
+| C            | ramen         | 3            | 1     |
++──────────────+───────────────+──────────────+───────+
+
