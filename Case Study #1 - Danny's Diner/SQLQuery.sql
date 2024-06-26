@@ -194,3 +194,53 @@ where purchase_order = 1
 +──────────────+───────────────+─────────────+─────────────────+
 
 -------------------------------------------------------------------------
+-- 8. What is the total items and amount spent for each member before they became a member?
+
+;with cte_spent as (
+	select
+		customer_id,
+		product_name,
+		price
+		from #membership_validation
+		where membership = ''
+		)
+
+	select 
+		customer_id,
+		SUM(price) as total_price,
+		COUNT(*) as total_item
+		from cte_spent
+		group by customer_id
+		order by customer_id
+-- results
++──────────────+──────────────+──────────────+
+| customer_id  | total_spent  | total_items  |
++──────────────+──────────────+──────────────+
+| A            | 25           | 2            |
+| B            | 40           | 3            |
++──────────────+──────────────+──────────────+
+
+-------------------------------------------------------------------------
+-- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+	
+select 
+	customer_id,
+	SUM(
+		case when product_name = 'sushi'
+		then (price * 20)
+		else (price * 10)
+		end
+	) as total_points
+from #membership_validation
+group by customer_id
+order by customer_id
+
+--results
++──────────────+───────────────+
+| customer_id  | total_points  |
++──────────────+───────────────+
+| A            | 860           |
+| B            | 940           |
++──────────────+───────────────+
+
+-------------------------------------------------------------------------
