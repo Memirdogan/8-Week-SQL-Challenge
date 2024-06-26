@@ -117,3 +117,14 @@ where rank = 1
 | C            | ramen         | 3            | 1     |
 +──────────────+───────────────+──────────────+───────+
 
+
+-------------------------------------------------------------------------
+-- I created a membership_validation table to validate only those customers joining in the membership program
+
+
+
+
+
+
+
+-- 6. Which item was purchased first by the customer after they became a member?
