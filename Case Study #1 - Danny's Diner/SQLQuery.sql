@@ -140,6 +140,7 @@ select * from #membership_validation
 order by customer_id, order_date
 */
 
+-------------------------------------------------------------------------
 -- 6. Which item was purchased first by the customer after they became a member?
 
 ;with cte_firstby as (
@@ -157,6 +158,7 @@ order by customer_id, order_date
 select * from cte_firstby
 where purchase_order = 1
 
+-- results
 +──────────────+───────────────+─────────────+─────────────────+
 | customer_id  | product_name  | order_date  | purchase_order  |
 +──────────────+───────────────+─────────────+─────────────────+
@@ -164,3 +166,31 @@ where purchase_order = 1
 | B            | sushi         | 2021-01-11  | 1               |
 +──────────────+───────────────+─────────────+─────────────────+
 
+-------------------------------------------------------------------------
+-- 7. Which item was purchased just before the customer became a member?
+
+;with cte_beforeby as (
+	select
+		customer_id,
+		product_name,
+		order_date,
+		RANK() over(
+		PARTITION by customer_id
+		order by order_date desc
+		) as purchase_order
+		from #membership_validation
+		where membership = ''
+		)
+select * from cte_beforeby
+where purchase_order = 1
+
+--results
++──────────────+───────────────+─────────────+─────────────────+
+| customer_id  | product_name  | order_date  | purchase_order  |
++──────────────+───────────────+─────────────+─────────────────+
+| A            | sushi         | 2021-01-01  | 1               |
+| A            | curry         | 2021-01-01  | 1               |
+| B            | sushi         | 2021-01-04  | 1               |
++──────────────+───────────────+─────────────+─────────────────+
+
+-------------------------------------------------------------------------
