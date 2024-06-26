@@ -120,11 +120,47 @@ where rank = 1
 
 -------------------------------------------------------------------------
 -- I created a membership_validation table to validate only those customers joining in the membership program
+DROP table if exists #membership_validation
+select
+	sales.customer_id,
+	sales.order_date,
+	menu.product_name,
+	menu.price,
+	members.join_date,
+CASE when sales.order_date >= members.join_date then 'x' else '' end as membership
+into #membership_validation
+from sales
+inner join menu on menu.product_id = sales.product_id
+left join members on members.customer_id = sales.customer_id
+where members.join_date is not null
+ORDER BY customer_id, order_date
 
-
-
-
-
-
+/*
+select * from #membership_validation
+order by customer_id, order_date
+*/
 
 -- 6. Which item was purchased first by the customer after they became a member?
+
+;with cte_firstby as (
+	select
+		customer_id,
+		product_name,
+		order_date,
+		RANK() over(
+		PARTITION by customer_id
+		order by order_date
+		) as purchase_order
+		from #membership_validation
+		where membership = 'X'
+		)
+select * from cte_firstby
+where purchase_order = 1
+
++──────────────+───────────────+─────────────+─────────────────+
+| customer_id  | product_name  | order_date  | purchase_order  |
++──────────────+───────────────+─────────────+─────────────────+
+| A            | curry         | 2021-01-07  | 1               |
+| B            | sushi         | 2021-01-11  | 1               |
++──────────────+───────────────+─────────────+─────────────────+
+
