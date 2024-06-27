@@ -244,3 +244,35 @@ order by customer_id
 +──────────────+───────────────+
 
 -------------------------------------------------------------------------
+-- 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+
+DROP TABLE IF EXISTS #membership_first_week_validation;
+
+;WITH cte_valid AS (
+  SELECT
+    customer_id,
+    order_date,
+    product_name,
+    price,
+    COUNT(*) AS order_count,
+    CASE 
+      WHEN order_date BETWEEN join_date AND DATEADD(day, 6, join_date)
+      THEN 'X'
+      ELSE ''
+    END AS within_first_week
+  FROM #membership_validation
+  GROUP BY 
+    customer_id,
+    order_date,
+    product_name,
+    price,
+    join_date
+)
+SELECT *
+INTO #membership_first_week_validation
+FROM cte_valid
+WHERE order_date < '2021-02-01';
+
+SELECT * 
+FROM #membership_first_week_validation;
+
