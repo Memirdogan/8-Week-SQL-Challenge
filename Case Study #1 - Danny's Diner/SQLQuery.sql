@@ -276,3 +276,4 @@ WHERE order_date < '2021-02-01';
 SELECT * 
 FROM #membership_first_week_validation;
 
+
